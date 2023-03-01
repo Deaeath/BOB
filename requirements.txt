@@ -1,0 +1,9 @@
+discord.py
+google_trans_new
+Pyrebase4 
+pytz
+vaderSentiment
+topggpy
+emoji
+wikipedia
+google
