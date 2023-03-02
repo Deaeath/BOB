@@ -233,7 +233,7 @@ async def DeActiveTextChannels():
 
 
 
-@client.command()
+@client.command() 
 async def approve(ctx, guild: Guild = None):
     if guild is None:
         embed0 = Embed(title="How to use this command?", description=f"`{prefix}approve <serverID>`",
