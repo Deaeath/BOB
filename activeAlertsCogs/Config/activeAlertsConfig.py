@@ -56,7 +56,7 @@ CONFIG = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-r7g2v%40black-bot-8458c.iam.gserviceaccount.com"
 }
-firebase = pyrebase.initialize_app(CONFIG)
+# firebase = pyrebase.initialize_app(CONFIG)
 
 CONFIG1 = {
     "apiKey": "AIzaSyC08u4sUrVrq-eiX-B6Te09cCvnS_AfXHU",
@@ -69,7 +69,7 @@ CONFIG1 = {
 
 }
 
-firebase1 = pyrebase.initialize_app(CONFIG1)
+# firebase1 = pyrebase.initialize_app(CONFIG1)
 
 """String Variables"""
 economy = "<a:arcadia:845876705364934686>"
@@ -371,11 +371,11 @@ secondSlowdownTime = 60
 thirdSlowdownTime = 300
 gamesCount = 4
 """Other Variables"""
-analyser = SentimentIntensityAnalyzer()
+# analyser = SentimentIntensityAnalyzer()
 db = firebase.database()
-db1 = firebase1.database()
-translator = google_translator()
-webhook = Webhook.partial(WEBHOOKID, WEBHOOKTOKEN, adapter=RequestsWebhookAdapter())
+# db1 = firebase1.database()
+# translator = google_translator()
+# webhook = Webhook.partial(WEBHOOKID, WEBHOOKTOKEN, adapter=RequestsWebhookAdapter())
 session = aiohttp.ClientSession()
 
 """Functions"""
