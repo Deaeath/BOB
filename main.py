@@ -1,21 +1,13 @@
-import discord
-import os
-from discord.ext import commands
 from activeAlertsCogs.Config.activeAlertsConfig import *
+from keep_alive import keep_alive
 
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='>', intents=intents)
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
-
-#
+intents = Intents.all()
+client = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), intents=intents)
 
 async def start():
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
+
 
 async def SetUpDB():
     await client.db.execute(f"CREATE TABLE IF NOT EXISTS moveBlacklist (guildID int, channelID int)")
@@ -32,7 +24,8 @@ async def SetUpDB():
     await client.db.execute("CREATE TABLE IF NOT EXISTS servers (guildID int)")
     await client.db.commit()
 
-@bot.event
+
+@client.event
 async def on_ready():
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
@@ -40,6 +33,8 @@ async def on_ready():
     await SetUpDB()
     DeActiveTextChannels.start()
     print(f"{client.user.name} is ready!")
+
+
 
 @tasks.loop(seconds=60)
 async def DeActiveTextChannels():
@@ -237,15 +232,16 @@ async def DeActiveTextChannels():
                                                                         category=category)
 
 
-@bot.command()
+
+@client.command()
 async def approve(ctx, guild: Guild = None):
     if guild is None:
         embed0 = Embed(title="How to use this command?", description=f"`{prefix}approve <serverID>`",
-                       color=random_color())
+                       color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed0)
         return
     embed = Embed(title="Approved",
-                  color=random_color())
+                  color=random.randint(0, 0xffffff))
     await ctx.send(embed=embed)
     await client.db.execute("INSERT INTO servers VALUES (?)", (guild.id,))
     await client.db.commit()
@@ -253,35 +249,36 @@ async def approve(ctx, guild: Guild = None):
     return
 
 
-@bot.command()
+@client.command()
 async def deny(ctx, guild: Guild = None):
     if guild is None:
         embed0 = Embed(title="How to use this command?", description=f"`{prefix}deny <serverID>`",
-                       color=random_color())
+                       color=random.randint(0, 0xffffff))
         await ctx.send(embed=embed0)
         return
     embed = Embed(title="Denied",
-                  color=random_color())
+                  color=random.randint(0, 0xffffff))
     await ctx.send(embed=embed)
     await client.db.execute("DELETE FROM servers WHERE guildID = ?", (guild.id,))
     await client.db.commit()
 
     return
 
-@bot.event
+
+@client.event
 async def on_guild_join(guild):
     async with client.db.execute("SELECT * FROM servers") as cursor:
         allServers = await cursor.fetchall()
     servers = []
     for server in allServers:
         servers.append(server[0])
-    if guild.id in servers or guild.id in [578268506999750656, 756513497411616888]:
+    if guild.id in servers or guild.id in [578268506999750656, 756513497411616888, 1057027267093614633]:
         #(guildID int, categoryID int, channelID int, messages text, timer text, remove text)
         await client.db.execute("INSERT INTO active VALUES (?, ?, ?, ?, ?, ?)", (guild.id, 0, 0, 3, 600, 900))
         await client.db.commit()
         return
     else:
-        channel = client.get_channel(796606534599704606)
+        channel = client.get_channel(1062354424808357908)
         owner_id = guild.owner_id
         owner = guild.get_member(owner_id)
         embed = Embed(
@@ -293,26 +290,27 @@ async def on_guild_join(guild):
         await guild.leave()
         return
 
-bot.remove_command("help")
-@bot.command()
+
+client.remove_command("help")
+
+@client.command()
 async def help(ctx, word=None):
     pass
 
-async def load_extensions():
-  for filename in os.listdir('./activeAlertsCogs'):
-      if filename.endswith(".py"):
-          await bot.load_extension(f'activeAlertsCogs.{filename[:-3]}')
+
+for filename in os.listdir('./activeAlertsCogs'):
+    if filename.endswith(".py"):
+        client.load_extension(f'activeAlertsCogs.{filename[:-3]}')
+
 
 if __name__ == "__main__":
 
-    async def main():
-        # await load_extensions()
-        await bot.start(TOKEN)
+  # async def main():
+  #   # await client.loop.create_task(start())
+  #   await client.run(TOKEN)  
 
-    asyncio.run(main())
-    
-    # bot.loop.create_task(start())
-    # bot.run(os.getenv('TOKEN'))
-    # # client.run(TOKEN)
-    # #client.run("ODQ2Mjc1Mjk1ODc0MjUyODMw.YKtJSQ.RBTu8uBAUh2l5WH2x4-pvuidn8E") #Main Bot
-    # asyncio.run(client.db.close())
+  # asyncio.run(main())
+  keep_alive()
+  client.run(TOKEN)
+
+  asyncio.run(client.db.close())

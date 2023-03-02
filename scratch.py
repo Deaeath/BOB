@@ -1,59 +1,67 @@
 import discord
 import os
-import firebase_admin
-from firebase_admin import credentials
-import discord.ext.commands
-from discord.ext.commands import Bot
-import activeAlertsCogs.Config
+from discord.ext import commands
 from activeAlertsCogs.Config.activeAlertsConfig import *
-from keep_alive import keep_alive
 
-cred = credentials.Certificate(CONFIG)
-firebase_admin.initialize_app(cred)
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix=">", intents=intents)
 
-client = discord.Client(intents=discord.Intents.default())
 
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+@bot.command()
+async def ping(ctx):
+    await ctx.send("pong")
 
-@client.event
-async def on_message(message):
-  if message.author == client.user:
-    return
 
-  if message.content.startswith('$hello'):
-    await message.channel.send('Hi Daddy! 😘')
+#
 
-# 
 
 async def start():
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
 
+
 async def SetUpDB():
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS moveBlacklist (guildID int, channelID int)")
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS channelsBlacklist (guildID int, channelID int)")
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS membersBlacklist (guildID int, memberID int)")
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS activeTextChannels (guildID int, channelID int, categoryID int)")
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS activeVoiceChannels (guildID int, channelID int, categoryID int)")
-    await client.db.execute(f"CREATE TABLE IF NOT EXISTS active (guildID int, categoryID int, channelID int, messages text, timer text, remove text)")
     await client.db.execute(
-        f"CREATE TABLE IF NOT EXISTS categories_channels (guildID int, categoryID int, channelID int, position int)")
+        f"CREATE TABLE IF NOT EXISTS moveBlacklist (guildID int, channelID int)"
+    )
     await client.db.execute(
-        f"CREATE TABLE IF NOT EXISTS pingME (guildID int, channelID int, memberID int)")
-    await client.db.execute("CREATE TABLE IF NOT EXISTS bannedCategories (guildID int, categoryID int)")
+        f"CREATE TABLE IF NOT EXISTS channelsBlacklist (guildID int, channelID int)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS membersBlacklist (guildID int, memberID int)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS activeTextChannels (guildID int, channelID int, categoryID int)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS activeVoiceChannels (guildID int, channelID int, categoryID int)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS active (guildID int, categoryID int, channelID int, messages text, timer text, remove text)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS categories_channels (guildID int, categoryID int, channelID int, position int)"
+    )
+    await client.db.execute(
+        f"CREATE TABLE IF NOT EXISTS pingME (guildID int, channelID int, memberID int)"
+    )
+    await client.db.execute(
+        "CREATE TABLE IF NOT EXISTS bannedCategories (guildID int, categoryID int)"
+    )
     await client.db.execute("CREATE TABLE IF NOT EXISTS servers (guildID int)")
     await client.db.commit()
 
-@client.event
+
+@bot.event
 async def on_ready():
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
 
     await SetUpDB()
-    DeActiveTextChannels.start()
+    await DeActiveTextChannels.start()
     print(f"{client.user.name} is ready!")
+
 
 @tasks.loop(seconds=60)
 async def DeActiveTextChannels():
@@ -61,10 +69,10 @@ async def DeActiveTextChannels():
     print("Starting")
     for guild in client.guilds:
 
-
-        async with client.db.execute(f"SELECT * FROM active WHERE guildID = ?", (guild.id,)) as cursor:
+        async with client.db.execute(
+            f"SELECT * FROM active WHERE guildID = ?", (guild.id,)
+        ) as cursor:
             listOfAllItems = await cursor.fetchone()
-
 
         # times = db.child("remove_active").child(guild.id).get().val()
 
@@ -74,17 +82,19 @@ async def DeActiveTextChannels():
         else:
             timer = int(listOfAllItems[5])
             move_blacklist = []
-            async with client.db.execute(f"SELECT * FROM moveBlacklist WHERE guildID = ?",
-                                              (guild.id,)) as cursor:
+            async with client.db.execute(
+                f"SELECT * FROM moveBlacklist WHERE guildID = ?", (guild.id,)
+            ) as cursor:
                 listOfAllItems = await cursor.fetchall()
 
             if len(listOfAllItems) > 0:
                 for i in listOfAllItems:
                     move_blacklist.append(int(i[0]))
 
-            async with client.db.execute(f"SELECT * FROM activeTextChannels WHERE guildID = ?", (guild.id,)) as cursor:
+            async with client.db.execute(
+                f"SELECT * FROM activeTextChannels WHERE guildID = ?", (guild.id,)
+            ) as cursor:
                 listOfAllItems = await cursor.fetchall()
-
 
             # activeChannels = db.child("is_active").get().val()
             activeChannelsList = []
@@ -97,24 +107,30 @@ async def DeActiveTextChannels():
 
                     if channel is not None:
 
-
                         try:
-                            message = await client.get_channel(channel.id).fetch_message(
-                                channel.last_message_id)
+                            message = await client.get_channel(
+                                channel.id
+                            ).fetch_message(channel.last_message_id)
 
                         except Exception:
                             message = None
 
                         if message is not None:
 
-                            minutes = message.created_at.strftime('%M')
-                            seconds = message.created_at.strftime('%S')
+                            minutes = message.created_at.strftime("%M")
+                            seconds = message.created_at.strftime("%S")
                             hours = message.created_at.strftime("%H")
                             days = message.created_at.strftime("%d")
                             month = message.created_at.strftime("%m")
                             year = message.created_at.strftime("%Y")
-                            a = datetime(int(year), int(month), int(days), int(hours),
-                                         int(minutes), int(seconds))
+                            a = datetime(
+                                int(year),
+                                int(month),
+                                int(days),
+                                int(hours),
+                                int(minutes),
+                                int(seconds),
+                            )
                             today = datetime.utcnow()
                             today_second = today.strftime("%S")
                             today_year = today.strftime("%Y")
@@ -122,17 +138,24 @@ async def DeActiveTextChannels():
                             today_day = today.strftime("%d")
                             today_hour = today.strftime("%H")
                             today_minute = today.strftime("%M")
-                            b = datetime(int(today_year), int(today_month), int(today_day), int(today_hour),
-                                         int(today_minute), int(today_second))
+                            b = datetime(
+                                int(today_year),
+                                int(today_month),
+                                int(today_day),
+                                int(today_hour),
+                                int(today_minute),
+                                int(today_second),
+                            )
 
                             c = b - a
                             x = c.total_seconds()
 
                             if x > timer:
 
-
                                 async with client.db.execute(
-                                        f"SELECT categoryID FROM activeTextChannels WHERE channelID = ? AND guildID = ?", (channel.id, guild.id)) as cursor:
+                                    f"SELECT categoryID FROM activeTextChannels WHERE channelID = ? AND guildID = ?",
+                                    (channel.id, guild.id),
+                                ) as cursor:
                                     listOfAllItems = await cursor.fetchone()
                                 if listOfAllItems is not None:
                                     category_ID = listOfAllItems[0]
@@ -149,14 +172,16 @@ async def DeActiveTextChannels():
                                         name += f"{r} "
 
                                     await client.db.execute(
-                                        f'DELETE FROM activeTextChannels WHERE channelID = ? AND guildID = ?',
-                                        (channel.id, guild.id))
+                                        f"DELETE FROM activeTextChannels WHERE channelID = ? AND guildID = ?",
+                                        (channel.id, guild.id),
+                                    )
 
                                     await client.db.commit()
 
                                     async with client.db.execute(
-                                            f"SELECT * FROM categories_channels WHERE categoryID = ? AND guildID = ?",
-                                            (category.id, guild.id)) as cursor:
+                                        f"SELECT * FROM categories_channels WHERE categoryID = ? AND guildID = ?",
+                                        (category.id, guild.id),
+                                    ) as cursor:
                                         listOfAllItems = await cursor.fetchall()
 
                                         # db.child("categories&channels").child(
@@ -170,8 +195,11 @@ async def DeActiveTextChannels():
                                         for i in listOfAllItems:
                                             positionsss.append((int(i[2]), int(i[3])))
 
-                                        sorted_positions = sorted(positionsss, key=lambda t: t[1],
-                                                                  reverse=False)
+                                        sorted_positions = sorted(
+                                            positionsss,
+                                            key=lambda t: t[1],
+                                            reverse=False,
+                                        )
 
                                         for key, value in sorted_positions:
                                             channel2 = client.get_channel(int(key))
@@ -183,16 +211,24 @@ async def DeActiveTextChannels():
                                                 else:
 
                                                     if channel.id == int(key):
-                                                        await channel.edit(position=int(value),
-                                                                           category=category)
-                                                    elif int(channel2.id) not in activeChannelsList:
+                                                        await channel.edit(
+                                                            position=int(value),
+                                                            category=category,
+                                                        )
+                                                    elif (
+                                                        int(channel2.id)
+                                                        not in activeChannelsList
+                                                    ):
 
-                                                        await channel2.edit(position=int(value),
-                                                                            category=category)
+                                                        await channel2.edit(
+                                                            position=int(value),
+                                                            category=category,
+                                                        )
                         else:
                             async with client.db.execute(
-                                    f"SELECT categoryID FROM activeTextChannels WHERE channelID = ? AND guildID = ?",
-                                    (channel.id, guild.id)) as cursor:
+                                f"SELECT categoryID FROM activeTextChannels WHERE channelID = ? AND guildID = ?",
+                                (channel.id, guild.id),
+                            ) as cursor:
                                 listOfAllItems = await cursor.fetchone()
                             if listOfAllItems is not None:
                                 category_ID = listOfAllItems[0]
@@ -209,14 +245,16 @@ async def DeActiveTextChannels():
                                     name += f"{r} "
 
                                 await client.db.execute(
-                                    f'DELETE FROM activeTextChannels WHERE channelID = ? AND guildID = ?',
-                                    (channel.id, guild.id))
+                                    f"DELETE FROM activeTextChannels WHERE channelID = ? AND guildID = ?",
+                                    (channel.id, guild.id),
+                                )
 
                                 await client.db.commit()
 
                                 async with client.db.execute(
-                                        f"SELECT * FROM categories_channels WHERE categoryID = ? AND guildID = ?",
-                                        (category.id, guild.id)) as cursor:
+                                    f"SELECT * FROM categories_channels WHERE categoryID = ? AND guildID = ?",
+                                    (category.id, guild.id),
+                                ) as cursor:
                                     listOfAllItems = await cursor.fetchall()
 
                                 # db.child("categories&channels").child(
@@ -230,8 +268,9 @@ async def DeActiveTextChannels():
                                     for i in listOfAllItems:
                                         positionsss.append((int(i[2]), int(i[3])))
 
-                                    sorted_positions = sorted(positionsss, key=lambda t: t[1],
-                                                              reverse=False)
+                                    sorted_positions = sorted(
+                                        positionsss, key=lambda t: t[1], reverse=False
+                                    )
 
                                     for key, value in sorted_positions:
                                         channel2 = client.get_channel(int(key))
@@ -243,87 +282,113 @@ async def DeActiveTextChannels():
                                             else:
 
                                                 if channel.id == int(key):
-                                                    await channel.edit(position=int(value),
-                                                                       category=category)
-                                                elif int(channel2.id) not in activeChannelsList:
+                                                    await channel.edit(
+                                                        position=int(value),
+                                                        category=category,
+                                                    )
+                                                elif (
+                                                    int(channel2.id)
+                                                    not in activeChannelsList
+                                                ):
 
-                                                    await channel2.edit(position=int(value),
-                                                                        category=category)
-
-
-# @client.event()
-# async def approve(ctx, guild: Guild = None):
-#     if guild is None:
-#         embed0 = Embed(title="How to use this command?", description=f"`{prefix}approve <serverID>`",
-#                        color=random_color())
-#         await ctx.send(embed=embed0)
-#         return
-#     embed = Embed(title="Approved",
-#                   color=random_color())
-#     await ctx.send(embed=embed)
-#     await client.db.execute("INSERT INTO servers VALUES (?)", (guild.id,))
-#     await client.db.commit()
-
-#     return
+                                                    await channel2.edit(
+                                                        position=int(value),
+                                                        category=category,
+                                                    )
 
 
-# @client.event
-# async def deny(ctx, guild: Guild = None):
-#     if guild is None:
-#         embed0 = Embed(title="How to use this command?", description=f"`{prefix}deny <serverID>`",
-#                        color=random_color())
-#         await ctx.send(embed=embed0)
-#         return
-#     embed = Embed(title="Denied",
-#                   color=random_color())
-#     await ctx.send(embed=embed)
-#     await client.db.execute("DELETE FROM servers WHERE guildID = ?", (guild.id,))
-#     await client.db.commit()
+@bot.command()
+async def approve(ctx, guild: Guild = None):
+    if guild is None:
+        embed0 = Embed(
+            title="How to use this command?",
+            description=f"`{prefix}approve <serverID>`",
+            color=random_color(),
+        )
+        await ctx.send(embed=embed0)
+        return
+    embed = Embed(title="Approved", color=random_color())
+    await ctx.send(embed=embed)
+    await client.db.execute("INSERT INTO servers VALUES (?)", (guild.id,))
+    await client.db.commit()
 
-#     return
+    return
 
-# @client.event()
-# async def on_guild_join(guild):
-#     async with client.db.execute("SELECT * FROM servers") as cursor:
-#         allServers = await cursor.fetchall()
-#     servers = []
-#     for server in allServers:
-#         servers.append(server[0])
-#     if guild.id in servers or guild.id in [578268506999750656, 756513497411616888]:
-#         #(guildID int, categoryID int, channelID int, messages text, timer text, remove text)
-#         await client.db.execute("INSERT INTO active VALUES (?, ?, ?, ?, ?, ?)", (guild.id, 0, 0, 3, 600, 900))
-#         await client.db.commit()
-#         return
-#     else:
-#         channel = client.get_channel(796606534599704606)
-#         owner_id = guild.owner_id
-#         owner = guild.get_member(owner_id)
-#         embed = Embed(
-#             description=f"{owner} / ({owner.id}) has tried to invite me to their server `{guild.name} /  ({guild.id})` without being approved",
-#             color=random_color())
-#         embed.set_thumbnail(url=owner.avatar_url)
-#         await channel.send(embed=embed)
 
-#         await guild.leave()
-#         return
+@bot.command()
+async def deny(ctx, guild: Guild = None):
+    if guild is None:
+        embed0 = Embed(
+            title="How to use this command?",
+            description=f"`{prefix}deny <serverID>`",
+            color=random_color(),
+        )
+        await ctx.send(embed=embed0)
+        return
+    embed = Embed(title="Denied", color=random_color())
+    await ctx.send(embed=embed)
+    await client.db.execute("DELETE FROM servers WHERE guildID = ?", (guild.id,))
+    await client.db.commit()
 
-# client.remove_command("help")
-# @client.command()
-# async def help(ctx, word=None):
-#     pass
+    return
 
-# for filename in os.listdir('./activeAlertsCogs'):
-#     if filename.endswith(".py"):
-#         client.load_extension(f'activeAlertsCogs.{filename[:-3]}')
+
+@bot.event
+async def on_guild_join(guild):
+    async with client.db.execute("SELECT * FROM servers") as cursor:
+        allServers = await cursor.fetchall()
+    servers = []
+    for server in allServers:
+        servers.append(server[0])
+    if guild.id in servers or guild.id in [578268506999750656, 756513497411616888]:
+        # (guildID int, categoryID int, channelID int, messages text, timer text, remove text)
+        await client.db.execute(
+            "INSERT INTO active VALUES (?, ?, ?, ?, ?, ?)",
+            (guild.id, 0, 0, 3, 600, 900),
+        )
+        await client.db.commit()
+        return
+    else:
+        channel = client.get_channel(796606534599704606)
+        owner_id = guild.owner_id
+        owner = guild.get_member(owner_id)
+        embed = Embed(
+            description=f"{owner} / ({owner.id}) has tried to invite me to their server `{guild.name} /  ({guild.id})` without being approved",
+            color=random_color(),
+        )
+        embed.set_thumbnail(url=owner.avatar_url)
+        await channel.send(embed=embed)
+
+        await guild.leave()
+        return
+
+
+bot.remove_command("help")
+
+
+@bot.command()
+async def help(ctx, word=None):
+    pass
+
+
+async def load_extensions():
+    for filename in os.listdir("./activeAlertsCogs"):
+        if filename.endswith(".py"):
+            await bot.load_extension(f"activeAlertsCogs.{filename[:-3]}")
+
+
 if __name__ == "__main__":
-    # client.loop.create_task(start())
-    keep_alive()
-    client.run(os.getenv('TOKEN'))
-    #client.run("ODQ2Mjc1Mjk1ODc0MjUyODMw.YKtJSQ.RBTu8uBAUh2l5WH2x4-pvuidn8E") #Main Bot
-    asyncio.run(client.db.close())
-  
+
+    # bot.run(TOKEN)
+
     async def main():
-      await create_db_pool() # again, no need to run with AbstractLoopEvent if you can await
-      await bot.start(TOKEN)
-  
+        # await load_extensions()
+        await bot.start(TOKEN)
+
     asyncio.run(main())
+
+    # bot.loop.create_task(start())
+    # bot.run(os.getenv('TOKEN'))
+    # # client.run(TOKEN)
+    # #client.run("ODQ2Mjc1Mjk1ODc0MjUyODMw.YKtJSQ.RBTu8uBAUh2l5WH2x4-pvuidn8E") #Main Bot
+    # asyncio.run(client.db.close())

@@ -8,6 +8,7 @@ import urllib
 import aiosqlite
 import json
 import traceback
+# from pyrebase import pyrebase
 from io import BytesIO
 from datetime import timedelta, datetime
 from itertools import cycle
@@ -56,6 +57,7 @@ CONFIG = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-r7g2v%40black-bot-8458c.iam.gserviceaccount.com"
 }
+
 # firebase = pyrebase.initialize_app(CONFIG)
 
 CONFIG1 = {
