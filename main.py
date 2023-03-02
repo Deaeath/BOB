@@ -32,7 +32,7 @@ async def SetUpDB():
     await client.db.execute("CREATE TABLE IF NOT EXISTS servers (guildID int)")
     await client.db.commit()
 
-@client.event
+@bot.event
 async def on_ready():
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
@@ -268,7 +268,7 @@ async def deny(ctx, guild: Guild = None):
 
     return
 
-@client.event
+@bot.event
 async def on_guild_join(guild):
     async with client.db.execute("SELECT * FROM servers") as cursor:
         allServers = await cursor.fetchall()
@@ -298,13 +298,21 @@ bot.remove_command("help")
 async def help(ctx, word=None):
     pass
 
-for filename in os.listdir('./activeAlertsCogs'):
-    if filename.endswith(".py"):
-        client.load_extension(f'activeAlertsCogs.{filename[:-3]}')
+async def load_extensions():
+  for filename in os.listdir('./activeAlertsCogs'):
+      if filename.endswith(".py"):
+          await bot.load_extension(f'activeAlertsCogs.{filename[:-3]}')
 
 if __name__ == "__main__":
-    client.loop.create_task(start())
-    bot.run(os.getenv('TOKEN'))
-    # client.run(TOKEN)
-    #client.run("ODQ2Mjc1Mjk1ODc0MjUyODMw.YKtJSQ.RBTu8uBAUh2l5WH2x4-pvuidn8E") #Main Bot
-    asyncio.run(client.db.close())
+
+    async def main():
+        # await load_extensions()
+        await bot.start(TOKEN)
+
+    asyncio.run(main())
+    
+    # bot.loop.create_task(start())
+    # bot.run(os.getenv('TOKEN'))
+    # # client.run(TOKEN)
+    # #client.run("ODQ2Mjc1Mjk1ODc0MjUyODMw.YKtJSQ.RBTu8uBAUh2l5WH2x4-pvuidn8E") #Main Bot
+    # asyncio.run(client.db.close())
