@@ -372,11 +372,11 @@ thirdSlowdownTime = 300
 gamesCount = 4
 """Other Variables"""
 # analyser = SentimentIntensityAnalyzer()
-db = firebase.database()
+# db = firebase.database()
 # db1 = firebase1.database()
 # translator = google_translator()
 # webhook = Webhook.partial(WEBHOOKID, WEBHOOKTOKEN, adapter=RequestsWebhookAdapter())
-session = aiohttp.ClientSession()
+# session = aiohttp.ClientSession()
 
 """Functions"""
 async def get_json( url:str):
