@@ -1,7 +1,9 @@
 from activeAlertsCogs.Config.activeAlertsConfig import *
 from keep_alive import keep_alive
+import discord
 
 intents = Intents.all()
+# bot = commands.Bot(command_prefix=prefix, description='Hi',intents=intents)
 client = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), intents=intents)
 
 async def start():
@@ -27,6 +29,7 @@ async def SetUpDB():
 
 @client.event
 async def on_ready():
+    await client.change_presence(activity=discord.Game(name="hard to get."))  
     await client.wait_until_ready()
     client.db = await aiosqlite.connect("activeAlerts.db")
 

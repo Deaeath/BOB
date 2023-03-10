@@ -193,6 +193,20 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "deprecated"
+version = "1.2.13"
+description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+wrapt = ">=1.10,<2"
+
+[package.extras]
+dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "importlib-resources (<4)", "configparser (<5)", "sphinxcontrib-websupport (<2)", "zipp (<2)", "PyTest (<5)", "PyTest-Cov (<2.6)", "pytest", "pytest-cov"]
+
+[[package]]
 name = "discord"
 version = "2.1.0"
 description = "A mirror package for discord.py. Please install that instead."
@@ -272,6 +286,66 @@ description = "A list-like structure which implements collections.abc.MutableSeq
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "future"
+version = "0.18.3"
+description = "Clean single-source support for Python 3 and 2"
+category = "main"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "gax-google-logging-v2"
+version = "0.8.3"
+description = "GAX library for the Google Logging API"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+google-gax = ">=0.12.5,<0.13.0"
+googleapis-common-protos = ">=1.1.0"
+grpc-google-logging-v2 = ">=0.8.1,<0.9.0"
+oauth2client = ">=1.4.11"
+
+[[package]]
+name = "gax-google-pubsub-v1"
+version = "0.8.3"
+description = "DEPRECATED"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+google-gax = ">=0.12.5,<0.13.0"
+googleapis-common-protos = ">=1.1.0"
+grpc-google-pubsub-v1 = ">=0.8.1,<0.9.0"
+oauth2client = ">=1.4.11"
+
+[[package]]
+name = "gcloud"
+version = "0.18.3"
+description = "API Client library for Google Cloud"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+gax-google-logging-v2 = ">=0.8.0,<0.9dev"
+gax-google-pubsub-v1 = ">=0.8.0,<0.9dev"
+google-gax = ">=0.12.3,<0.13dev"
+googleapis-common-protos = "*"
+grpc-google-logging-v2 = ">=0.8.0,<0.9dev"
+grpc-google-pubsub-v1 = ">=0.8.0,<0.9dev"
+grpcio = ">=1.0rc1"
+httplib2 = ">=0.9.1"
+oauth2client = ">=2.0.1"
+protobuf = ">3.0.0.b2"
+six = "*"
+
+[package.extras]
+grpc = ["grpcio (>=1.0rc1)", "google-gax (>=0.12.3,<0.13dev)", "gax-google-pubsub-v1 (>=0.8.0,<0.9dev)", "grpc-google-pubsub-v1 (>=0.8.0,<0.9dev)", "gax-google-logging-v2 (>=0.8.0,<0.9dev)", "grpc-google-logging-v2 (>=0.8.0,<0.9dev)"]
 
 [[package]]
 name = "google-api-core"
@@ -402,6 +476,21 @@ python-versions = ">=3.7"
 testing = ["pytest"]
 
 [[package]]
+name = "google-gax"
+version = "0.12.5"
+description = "Google API Extensions"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+future = ">=0.15.2"
+grpcio = ">=1.0rc1"
+oauth2client = ">=1.5.2"
+ply = "3.8"
+protobuf = ">=3.0.0b3"
+
+[[package]]
 name = "google-resumable-media"
 version = "2.4.1"
 description = "Utilities for Google Media Downloads and Resumable Uploads"
@@ -429,6 +518,32 @@ protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4
 
 [package.extras]
 grpc = ["grpcio (>=1.44.0,<2.0.0dev)"]
+
+[[package]]
+name = "grpc-google-logging-v2"
+version = "0.8.1"
+description = "GRPC library for the google-logging-v2 service"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+googleapis-common-protos = ">=1.1.0"
+grpcio = ">=1.0rc1"
+oauth2client = ">=1.4.11"
+
+[[package]]
+name = "grpc-google-pubsub-v1"
+version = "0.8.1"
+description = "GRPC library for the google-pubsub-v1 service"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+googleapis-common-protos = ">=1.1.0"
+grpcio = ">=1.0rc1"
+oauth2client = ">=1.4.11"
 
 [[package]]
 name = "grpcio"
@@ -520,6 +635,18 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jwcrypto"
+version = "1.4.2"
+description = "Implementation of JOSE Web standards"
+category = "main"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+cryptography = ">=2.3"
+deprecated = "*"
+
+[[package]]
 name = "markupsafe"
 version = "2.1.2"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -550,6 +677,21 @@ description = "Fundamental package for array computing in Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
+
+[[package]]
+name = "oauth2client"
+version = "4.1.3"
+description = "OAuth 2.0 client library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+httplib2 = ">=0.9.1"
+pyasn1 = ">=0.1.7"
+pyasn1-modules = ">=0.0.5"
+rsa = ">=3.1.4"
+six = ">=1.6.1"
 
 [[package]]
 name = "packaging"
@@ -613,6 +755,14 @@ testing = ["pytest-benchmark", "pytest"]
 dev = ["tox", "pre-commit"]
 
 [[package]]
+name = "ply"
+version = "3.8"
+description = "Python Lex & Yacc"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "proto-plus"
 version = "1.22.2"
 description = "Beautiful, Pythonic protocol buffers."
@@ -662,6 +812,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
+name = "pycryptodome"
+version = "3.17"
+description = "Cryptographic library for Python"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "pycryptodomex"
 version = "3.16.0"
 description = "Cryptographic library for Python"
@@ -706,6 +864,22 @@ python-versions = ">=3.6.8"
 diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
+name = "pyrebase4"
+version = "4.6.0"
+description = "A simple python wrapper for the Firebase API with current deps"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+gcloud = ">=0.18.3"
+oauth2client = ">=4.1.2"
+pycryptodome = ">=3.6.4"
+python-jwt = ">=2.0.1"
+requests = ">=2.19.1"
+requests-toolbelt = ">=0.7.1"
+
+[[package]]
 name = "pyseto"
 version = "1.7.0"
 description = "A Python implementation of PASETO/PASERK."
@@ -732,6 +906,17 @@ python-versions = ">=3.8"
 
 [package.extras]
 cli = ["click (>=5.0)"]
+
+[[package]]
+name = "python-jwt"
+version = "4.0.0"
+description = "Module for generating and verifying JSON Web Tokens"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+jwcrypto = ">=1.4.2"
 
 [[package]]
 name = "python-lsp-jsonrpc"
@@ -833,6 +1018,17 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+
+[[package]]
+name = "requests-toolbelt"
+version = "0.10.1"
+description = "A utility belt for advanced users of python-requests"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+requests = ">=2.0.1,<3.0.0"
 
 [[package]]
 name = "rope"
@@ -944,6 +1140,14 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "wrapt"
+version = "1.15.0"
+description = "Module for decorators, wrappers and monkey patching."
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[[package]]
 name = "yapf"
 version = "0.32.0"
 description = "A formatter for Python code."
@@ -966,7 +1170,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10.0,<3.11"
-content-hash = "e3c31604c4596bc579fed7b03d94c3e1865557662d6f4afa48718abab28ae108"
+content-hash = "017078cb91dd933b8bcf29d29094078b0d2a0068eae7802aed9ea2b16623108a"
 
 [metadata.files]
 aiohttp = []
@@ -985,12 +1189,17 @@ click = []
 colorama = []
 cryptography = []
 debugpy = []
+deprecated = []
 discord = []
 "discord.py" = []
 emoji = []
 firebase-admin = []
 flask = []
 frozenlist = []
+future = []
+gax-google-logging-v2 = []
+gax-google-pubsub-v1 = []
+gcloud = []
 google-api-core = []
 google-api-python-client = []
 google-auth = []
@@ -999,8 +1208,11 @@ google-cloud-core = []
 google-cloud-firestore = []
 google-cloud-storage = []
 google-crc32c = []
+google-gax = []
 google-resumable-media = []
 googleapis-common-protos = []
+grpc-google-logging-v2 = []
+grpc-google-pubsub-v1 = []
 grpcio = []
 grpcio-status = []
 httplib2 = []
@@ -1009,31 +1221,38 @@ iso8601 = []
 itsdangerous = []
 jedi = []
 jinja2 = []
+jwcrypto = []
 markupsafe = []
 msgpack = []
 multidict = []
 numpy = []
+oauth2client = []
 packaging = []
 parso = []
 passlib = []
 platformdirs = []
 pluggy = []
+ply = []
 proto-plus = []
 protobuf = []
 pyasn1 = []
 pyasn1-modules = []
 pycparser = []
+pycryptodome = []
 pycryptodomex = []
 pyflakes = []
 pyjwt = []
 pyparsing = []
+pyrebase4 = []
 pyseto = []
 python-dotenv = []
+python-jwt = []
 python-lsp-jsonrpc = []
 pytoolconfig = []
 replit = []
 replit-python-lsp-server = []
 requests = []
+requests-toolbelt = []
 rope = []
 rsa = []
 six = []
@@ -1045,5 +1264,6 @@ uritemplate = []
 urllib3 = []
 werkzeug = []
 whatthepatch = []
+wrapt = []
 yapf = []
 yarl = []
